@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+
+<!-------------------------- block head -------------------------------->
+
+{% block head %}
+<title>Typing Habits Homepage</title>
+<style>
+  buttons{
+    color: #c0c0c0;
+  }
+</style>
+{% endblock %}
+
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="index-banner" style="background-image:url({{ url_for('static', filename='images/typing-on-keyboard.jpg') }}); background-repeat:no-repeat; background-size:cover">
+    <div class="container welcome-menu" >
+        <div class="row welcome-menu">
+            <div class="col-md-6" style="margin-left:auto;margin-right:auto">
+              <div>
+                <h1> Welcome, {{ user }}!</h1>
+              </div>
+              <div>
+                <h6>What would you like to do today?</h6>
+              </div>
+              <div>
+                <button type="button" onClick="location.href='/recalibrate'" class="btn btn-light">Re-calibrate typing habit</button>
+                <button type="button" class="btn btn-light" onclick="window.location.href=`{{ url_for('logout') }}`">Logout</button>
+              </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!------------------------- Banner section ------------------------->
+{% endblock %}

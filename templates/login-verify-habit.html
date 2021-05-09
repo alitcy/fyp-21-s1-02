@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+<!-------------------------- block head -------------------------------->
+{% block head %}
+<title>Typing Habits Login Page</title>
+<script type="text/javascript" src="{{ url_for('static', filename='js/form.js') }}"></script>
+{% endblock %}
+
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+{% block navlinks %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+</li>
+{% endblock %}
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 form-box" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">     
+                <div style="text-align: center;">
+                    <h2>Hi {{ user }}!</h2>
+                    <h2>Validate your typing habit in the text box below</h2>
+                </div>  
+
+                <div class="form-group" id="login_pt_one">
+                    <form id="loginFormValidate" method="post" onsubmit="loginConfirm('loginFormValidate', 'login-verify-jdata', event)">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <label id="sentence">{{ sentence }}</label>
+                        <textarea onkeypress="keyPress(event)" onkeydown="keyDown('login-user-entry', event)" id ='login-user-entry'
+                                onkeyup="keyUp('sentence', 'login-user-entry', event)" name="login-typing-habit" 
+                                placeholder="Please type according to the sentence above. (Sensitive to caps and punctuation)"
+                                rows="6" cols="60" oncut="return false;" onpaste="return false;"
+                                oncopy="return false;" oncontextmenu="return false;"></textarea>
+                        <textarea type="jsondata" name="LVerify-json" style="display:none" id="login-verify-jdata"></textarea>
+                                                
+                        {% if error %}
+                            <div style="padding:2%"class="alert alert-danger alert-dismissible">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>{{error}}</strong>
+                            </div>
+                        {% endif %}
+                        <input type="submit"
+                                value="Validate Habit" class="btn btn-info"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/typing-habits.js') }}"></script>
+<script>
+    var csrf_token = "{{ csrf_token() }}";
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        }
+    });
+</script>
+
+<!------------------------- Banner section ------------------------->
+{% endblock %}

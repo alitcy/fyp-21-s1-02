@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Recalibration for an account</title>
+<style>
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+<!-- -------------------------------------------------------------------- -->
+
+{% block navlinks %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+</li>
+{% endblock %}
+<!-- -------------------------------------------------------------------- -->
+
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+  <div class="container">
+      <div class="row">
+          <div class="col-md-6 form-box" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">       
+              <h2>Recalibration for your account</h2>
+              <br /> 
+              <div>
+                    {% if not recalibrated %}
+                    <form id="recalibrate-form" method="post" onsubmit="submitRecalAndRegArray('recal-verify-jdata', 'recalibrate-form', event)">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="tab">
+                            <label id="sentence">{{ sentence }}</label>
+                            <textarea onkeypress=keyPress(event) onkeydown="keyDown('recal-user-entry', event)" onkeyup="keyUp('sentence', 'recal-user-entry', event)" id="recal-user-entry" name="recalibrate-typing-habit" placeholder="Please type according to the sentence above. (Sensitive to caps and punctuation)"
+                                    rows="6" cols="60" oncut="return false;" onpaste="return false;"
+                                    oncopy="return false;" oncontextmenu="return false;"></textarea>
+                        <br/>
+                        </div>
+
+                        <div style="font-size:12px;color:green" id="recal-instruction">1/10 attempt(s)</div>
+                        <textarea type="jsondata" name="Recal-habit-json" style="display:none" id="recal-verify-jdata"></textarea>
+                      
+                        {% if error %}
+                        <div style="padding:2%"class="alert alert-danger alert-dismissible">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <strong>{{ error }}</strong>
+                        </div>
+                        {% endif %}
+<!-- ------------------------------------------------------------------------------------- -->
+                        <button id="recal-attempt-btn" onclick="recalibrateAndRegister('recal-user-entry', 'recal-instruction', 'recal-attempt-btn', 'submit-btn', event)" 
+                        class="btn btn-info">Next</button>                  
+                        <div class="center">
+                            <input type="submit" id="submit-btn" style="display:none" value="Register" class="btn btn-info" />
+                        </div>
+                    </form>
+                    {% else %}
+                        <div class="alert alert-success">
+                            <h1>
+                                {{ recalibrated }}
+                            </h1>
+                            <p>Click <a href='/'>here</a> to return to the homepage.</p>
+                        </div>
+                    {% endif %}
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+<script type="text/javascript" src="{{ url_for('static', filename='js/typing-habits.js') }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var csrf_token = "{{ csrf_token() }}";
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        }
+    });
+</script>
+{% endblock %}
