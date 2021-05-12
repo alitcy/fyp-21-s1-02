@@ -7,7 +7,7 @@ from flask import (
 )
 from flask_wtf.csrf import CSRFProtect
 from flask_mysqldb import MySQL
-# from celery import Celery
+
 
 # General python imports
 import os
@@ -15,6 +15,7 @@ import random
 from datetime import timedelta, datetime
 import json
 import numpy as np
+from passlib.hash import sha256_crypt
 
 # Import local files
 import processData
@@ -119,7 +120,7 @@ def register_habit():
         new_user = session.get("new_user", None)
 
         if 'null' in data: # Check if data has error
-            return render_template('recalibrate.html', sentence=sentence[0], error="Error! Could not register habit. Please try again.")
+            return render_template('register-habit.html', sentence=sentence[0], error="Error! Could not register habit. Please try again.")
         # STEP 2: processing, encryption of data and writing into csv
         # Processing 
         for x in raw_data:
@@ -146,12 +147,15 @@ def register_habit():
         # res = ocsvm.predict(new_user_data)
         # print(res[0])
         # STEP 4: encryption of key?? & store in db (new table: s/n, user_id (fk reference users), encrypted key)
+        processData.encryptCSV(new_user)
         # STEP 5: Insert new user into db
         
         try:
             try_register = register_user(session.get("new_user", None), session.get('fname', None), session.get('lname', None), \
             session.get('dob', None), session.get('email', None), reg_sentence, session.get('sec_qn', None), session.get('sec_ans', None))
         except Exception as e:
+            # to add delete csv
+            os.rmdir('typing-habits\\' + new_user)
             print(e)
             abort(500)
         finally:
@@ -257,7 +261,9 @@ def login_verify():
                 # STEP 1: encryption of data and writing into csv
                 login_try = 0 # reset global variable login_try to 0
                 csv_obj = processData.packTypingDataIntoArray(user, session_num, 1, accuracy, wpm, calculation_array)
+                processData.decryptCSV(user)
                 processData.saveCSV(user, csv_obj) # save the record into csv
+                processData.encryptCSV(user)
                 # Step 2: return all the success/page all these
                 #session.permanent = True # if successfully verified
                 session['verified_login'] = True
@@ -346,6 +352,9 @@ def recalibrate():
             except Exception as e:
                 print(e)
                 abort(500)
+
+            # Encrypt csv
+            processData.encryptCSV(user)
 
             # STEP 4: update sentence
             update = update_sentence(session['sentence'], user)
@@ -445,11 +454,12 @@ def register_user(user, first_name, last_name, dob, email, sentence, security_qn
     date_of_birth = dob.split('-')
     new_dob = datetime(int(date_of_birth[0]), int(date_of_birth[1]), int(date_of_birth[2]))
     formatted_dob = new_dob.strftime('%Y-%m-%d')
+    security_ans_hash = sha256_crypt.hash(security_ans)
     # parameterized_dob = "'" + "{formatted_dob}".format(formatted_dobformatted_dob=formatted_dob) + "'"
     cursor = mysql.connection.cursor()
     query = "INSERT INTO `users` (`id`, `username`, `first_name`, `last_name`, `date_of_birth`, `email`, `sentence`, `security_qn`, `security_ans`) \
     VALUES (NULL, %s, %s, %s, STR_TO_DATE(%s, '%%Y-%%m-%%d'), %s, %s, %s, %s)"
-    parameter =  ([user], [first_name], [last_name], [formatted_dob], [email], [sentence], [security_qn], [security_ans])
+    parameter =  ([user], [first_name], [last_name], [formatted_dob], [email], [sentence], [security_qn], [security_ans_hash])
 
     success = False
     try:
@@ -476,10 +486,11 @@ def checkSecurityAns(user, ans):
     result = cursor.fetchone()
     result = result[0]
     cursor.close()
-    if result == ans:
-        return True
-    else:
-        return False
+    return sha256_crypt.verify(ans, result)
+    # if result == ans:
+    #     return True
+    # else:
+    #     return False
 
 if __name__ == "__main__":
     app.run(debug=True)

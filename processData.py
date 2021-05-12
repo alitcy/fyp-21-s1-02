@@ -13,6 +13,7 @@ from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 
+
 def processRawTypingData(dwell_time, flight_time):
     calculation_array = []
 
@@ -59,6 +60,7 @@ def saveCSV(username, csv_obj):
 
 # Opens the user's .csv file, get session number of last row of data,
 def getLastSessionNumber(user):
+    decryptCSV(user)
     folder = 'typing-habits' + '\\' + user
     folder_path = os.path.dirname(os.path.realpath(folder))
     filename = folder_path + '\\' + user + '\\' + user + ".csv"
@@ -72,15 +74,116 @@ def getLastSessionNumber(user):
                 columns = [str(row_index), row[0], row[1], row[2]]
                 data.append(columns)
     last_row = data[-1]
+    encryptCSV(user)
     return last_row[2]
 
-def encryptCSV(filename, key, iv):
+def encryptCSV(username):
+
+    key = get_random_bytes(16)
+    iv = get_random_bytes(16)
+
+    folder = 'typing-habits' + '\\' + username
+    
+    # Checks
+    ensureDirectoryExists('typing-habits') # ensure the typing habit folder exists
+    ensureDirectoryExists(folder)
+
+    # get your current directory .../typing-habits/user
+    folder_path = os.path.dirname(os.path.realpath(folder))
+    filename = folder_path + '\\' + username + '\\' + username + ".csv"
+
     # open the unencrypted .csv 
     with open(filename, 'rb') as f:
         original = f.read()
     cipher = aes.new(key, aes.MODE_CBC, iv)
-    encrypted = cipher.encrypt(pad(original, aes.block_size))
+    encrypted = cipher.encrypt(pad(original, aes.block_size)) 
 
+    appendedStr = bytearray(iv)
+    appendedStr.extend(key)
+    appendedStr.extend(encrypted)
     # replace with an encrypted version of the .csv
     with open(filename, 'wb+') as f:
-        f.write(encrypted)
+        f.write(appendedStr)
+
+def decryptCSV(username):
+    folder = 'typing-habits' + '\\' + username
+    
+    # Checks
+    ensureDirectoryExists('typing-habits') # ensure the typing habit folder exists
+    ensureDirectoryExists(folder)
+
+    # get your current directory .../typing-habits/user
+    folder_path = os.path.dirname(os.path.realpath(folder))
+    filename = folder_path + '\\' + username + '\\' + username + ".csv"
+
+    with open(filename, 'rb') as f:
+        iv = f.read(16)
+        f.seek(16)
+        key = f.read(16)
+        f.seek(32)
+        enc = f.read()
+
+    cipher = aes.new(key, aes.MODE_CBC, iv)
+    decrypted = unpad(cipher.decrypt(enc), aes.block_size)
+
+    with open(filename, 'wb+') as f:
+        f.write(decrypted)
+
+# encryption
+# key = get_random_bytes(16)
+# iv = get_random_bytes(16)
+
+# with open("key.txt", 'wb+') as f:
+#     f.write(key)
+
+# encryptCSV("test")
+
+# decryption
+# with open("key.txt", 'rb') as f:
+#     key = f.read()
+
+# decryptCSV("test")
+
+
+
+
+# backup
+#
+# def encryptCSV(username, key, iv):
+#     folder = 'typing-habits' + '\\' + username
+    
+#     # Checks
+#     ensureDirectoryExists('typing-habits') # ensure the typing habit folder exists
+#     ensureDirectoryExists(folder)
+
+#     # get your current directory .../typing-habits/user
+#     folder_path = os.path.dirname(os.path.realpath(folder))
+#     filename = folder_path + '\\' + username + '\\' + username + ".csv"
+
+#     # open the unencrypted .csv 
+#     with open(filename, 'rb') as f:
+#         original = f.read()
+#     cipher = aes.new(key, aes.MODE_CBC, iv)
+#     encrypted = cipher.encrypt(pad(original, aes.block_size))
+#     # replace with an encrypted version of the .csv
+#     with open(filename, 'wb+') as f:
+#         f.write(encrypted)
+
+# def decryptCSV(username, key, iv):
+#     folder = 'typing-habits' + '\\' + username
+    
+#     # Checks
+#     ensureDirectoryExists('typing-habits') # ensure the typing habit folder exists
+#     ensureDirectoryExists(folder)
+
+#     # get your current directory .../typing-habits/user
+#     folder_path = os.path.dirname(os.path.realpath(folder))
+#     filename = folder_path + '\\' + username + '\\' + username + ".csv"
+
+#     with open(filename, 'rb') as f:
+#         enc = f.read()
+#     cipher = aes.new(key, aes.MODE_CBC, iv)
+#     decrypted = unpad(cipher.decrypt(enc), aes.block_size)
+    
+#     with open(filename, 'wb+') as f:
+#         f.write(decrypted)

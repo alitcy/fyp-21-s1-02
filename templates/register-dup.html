@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+
+<!-------------------------- block head -------------------------------->
+
+{% block head %}
+<title>Register for an account</title>
+<script>
+    function checkDOB(){
+        document
+    }
+</script>
+{% endblock %}
+
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+{% block navlinks %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+</li>
+{% endblock %}
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 form-box" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">       
+                <h2 style="margin-bottom: 2%;">Register an account</h2>
+                <h4 style="margin-bottom: 2%;">Step 1 of 2: Enter your details</h4>
+                <div>
+                    <form id="reg-form-one" method="post" action="{{ url_for('register') }}">
+                        <div class="form-group">
+                            <div>
+                                <label>Username</label>
+                                <input type="text" name="username" 
+                                        size="20" required placeholder="Username"
+                                        title="Username at least 4 characters" pattern="^[A-Za-z0-9]+$"/>
+                            </div>
+
+                            <div>
+                                <div>
+
+                                </div>
+                                <div>
+                                    
+                                </div>
+                            </div>
+
+                        </div>
+                        <table class="form-group img-fluid">
+                            <tr>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>First name</label>
+                                    <input type="text" name="first_name" 
+                                            size="20" required
+                                            title="Please enter a legitimate first name" placeholder="First name"/>
+                                </td>
+                                <td>
+                                    <label>Last name</label>
+                                    <input type="text" name="last_name" 
+                                            size="20" required
+                                            title="Please enter a legitimate last name" placeholder="Last name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Date of Birth</label>
+                                    <input name="dob" type="date" required 
+                                            title="dd/mm/yyyy format only" pattern="^(0[1-9]|[12][0-9]|3[01])[- /.]" />
+                                </td>
+                                <td>
+                                    <label>Email</label>
+                                    <input type="email" name="email" 
+                                                size="20" required pattern="[^@]+@[^@]+\.[^@]+"
+                                                title="Please enter a valid email" placeholder="example@email.com"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <br />
+                        {% if user_error %}
+                        <div style="padding:2%"class="alert alert-danger alert-dismissible">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <strong>{{ user_error }}</strong>
+                        </div>
+                        {% endif %}
+                        {% if email_error %}
+                        <div style="padding:2%"class="alert alert-danger alert-dismissible">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <strong>{{ email_error }}</strong>
+                        </div>
+                        {% endif %}
+                        <input type="submit" value="Register" class="btn btn-info" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!------------------------- Banner section ------------------------->
+{% endblock %}

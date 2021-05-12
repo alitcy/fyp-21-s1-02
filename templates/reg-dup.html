@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+
+<!-------------------------- block head -------------------------------->
+
+{% block head %}
+<title>Register for an account</title>
+<script src="{{ url_for('static', filename='js/form.js') }}"></script>
+{% endblock %}
+
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+{% block navlinks %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+</li>
+{% endblock %}
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 form-box" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">       
+                <h2>Register an account</h2>
+                <br /> 
+                <div id="login_pt_one">
+                    <form id="reg-form-one" method="post" action="{{ url_for('register') }}">
+                        <div>
+                            <label>Username </label>
+                            <input type="text" name="username" size="20" />
+                        </div>
+                        
+                        <div>
+                            <label>First name </label>
+                            <input type="text" name="username" size="20" />
+                        </div>
+
+                        <div style="margin-right:9%">
+                            <label>Date of Birth </label>
+                            <input type="date" />
+                        </div>
+
+                        <div style="margin-left:7%">
+                            <label>Email </label>
+                            <input type="text" name="email" size="20" />
+                        </div>
+
+                        {% if error %}
+                        <div style="padding:2%"class="alert alert-danger alert-dismissible">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <strong>{{error}}</strong>
+                        </div>
+                        {% endif %}
+
+                        <br />                       
+                        <input type="submit" value="Register" class="btn btn-info" />
+                    </form>
+                </div>
+                <div id="reg_pt_two">
+                    <form id="reg-form-two" method="post" action="{{ url_for('register') }}"></form>
+                        <div class="tab">
+                            <label>Authenticate your typing habit </label>
+
+                            <textarea name="reg-typing-habit" placeholder="Please type according to the sentence above. (Sensitive to caps and punctuation)"
+                                    rows="6" cols="50"></textarea>
+                            <br/>
+                            {{test}}
+                            {% if error %}
+                            <div style="padding:2%"class="alert alert-danger alert-dismissible">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>{{error}}</strong>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <input type="submit" value="Validate" class="btn btn-info"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!------------------------- Banner section ------------------------->
+{% endblock %}

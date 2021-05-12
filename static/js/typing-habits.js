@@ -150,20 +150,41 @@ function keyUp(sentence, userEntry) {
 
     }
     else 
-    {
-        currentSentence = document.getElementById(userEntry).value.length;
+    { 
 
-        for (i = 0; i < (originalSentence - currentSentence); i++)
-        {
-            stopFlightTime.splice(-1);
-            enteredText.splice(-1);
-            recordDwellTime.splice(-1);
-        }
+        stopFlightTime.splice(-1);
+        startFlightTime.splice(-1);
+        startFlightTime.splice(-1);
+        enteredText.splice(-1);
+        recordDwellTime.splice(-1);
 
-        for (i = 0; i < (originalSentence - currentSentence)+1; i++)
-        {
-            startFlightTime.splice(-1);
-        }
+
+        // currentSentence = document.getElementById(userEntry).value.length;
+        // var numberOfTimes = originalSentence - currentSentence;
+        // console.log(numberOfTimes);
+
+        // if (numberOfTimes == 1)
+        // {
+        //     stopFlightTime.splice(-1);
+        //     startFlightTime.splice(-1);
+        //     startFlightTime.splice(-1);
+        //     enteredText.splice(-1);
+        //     recordDwellTime.splice(-1);
+        // }
+        // else
+        // {
+        //     for (i = 1; i < numberOfTimes; i++)
+        //     {
+        //         stopFlightTime.splice(-1);
+        //         enteredText.splice(-1);
+        //         recordDwellTime.splice(-1);
+        //     }
+
+        //     for (i = 1; i < numberOfTimes+1; i++)
+        //     {
+        //         startFlightTime.splice(-1);
+        //     }
+        // }
 
         if (document.getElementById(userEntry).value.length != 0)         // if no input left, dont start FlightTime
         {
@@ -182,6 +203,7 @@ function keyUp(sentence, userEntry) {
     }
 
     originalSentence = document.getElementById(userEntry).value.length;
+
     text = document.getElementById(userEntry).value; // user input
     test = document.getElementById(sentence).innerHTML; // generated sentence
     if (text.length == test.length)					// to check input value length if equal to test length

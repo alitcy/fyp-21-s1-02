@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+<!-------------------------- block head -------------------------------->
+{% block head %}
+<title>Typing Habits Login Page</title>
+<script type="text/javascript" src="{{ url_for('static', filename='js/form.js') }}"></script>
+{% endblock %}
+
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+{% block navlinks %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+</li>
+{% endblock %}
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 form-box" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">       
+                <h2>Log into your account</h2>
+                <br />
+                
+                <div class="tab" id="login_pt_one">
+                    <form id="form" method="post" action="{{ url_for('login') }}">
+                        <label>Username </label>
+                        <input type="text" name="username" size="20" />
+                        <br/>
+                        {% if error %}
+                        <div style="padding:2%"class="alert alert-danger alert-dismissible">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <strong>{{error}}</strong>
+                        </div>
+                        {% endif %}
+                        <input type="submit" value="Next"/>
+                    </form>
+                </div>
+                
+                
+
+                        <!-- Circles which indicates the steps of the form: -->
+                        <div style="text-align:center;margin-top:40px;">
+                            <span class="step"></span>
+                            <span class="step"></span>
+                            <span class="step"></span>
+                            <span class="step"></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!------------------------- Banner section ------------------------->
+{% endblock %}
