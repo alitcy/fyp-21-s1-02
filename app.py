@@ -17,6 +17,7 @@ import json
 import numpy as np
 from passlib.hash import sha256_crypt
 
+
 # Import local files
 import processData
 import ocsvm
@@ -30,10 +31,10 @@ csrf = CSRFProtect(app)
 
 # database
 mysql = MySQL(app)
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'typing_habits'
+app.config['MYSQL_HOST'] = 'us-cdbr-east-03.cleardb.com'
+app.config['MYSQL_USER'] = 'baec853f4a9c2a'
+app.config['MYSQL_PASSWORD'] = '9ab7b405'
+app.config['MYSQL_DB'] = 'heroku_7033404f5c36b67'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=15) # user only permitted to login for x amount of minutes
 
 # sessions
@@ -41,6 +42,7 @@ app.secret_key = ">bnbJ#Rl_c)>zm>o':wC%!0MS2A&]*e{)9U)c,FI5s;>f1@Ol|cj4o?V;FwHpS
 
 # Variables
 login_try = 0 # if login_try == 3, website will be routed to security question
+security_try=0
 
 # Routing & Page views
 @app.route('/', methods=["GET"])
@@ -103,9 +105,11 @@ def register():
 @app.route('/register/verify-habits', methods = ['POST', 'GET'])
 def register_habit():
     # variables
+    print('register habit')
     sentence = generate_new_sentence()
     calculation_array = []
     if request.method == "POST":
+        print('posting register habittt')
         new_user = session.get("new_user", None)
         # if request.form.get("reg-typing-habit", None) == None or request.form.get("RHabit-json", None) == None or \
         #     request.form.get("reg-typing-habit", None) == '' or request.form.get("RHabit-json", None) == '':
@@ -116,6 +120,7 @@ def register_habit():
         print(data)
         reg_sentence = session.get('sentence',None)
         raw_data = json.loads(data)
+        print(raw_data)
         user_session = 1
         new_user = session.get("new_user", None)
 
@@ -133,6 +138,7 @@ def register_habit():
             dwell = x['dwell']
             calculation_array = processData.processRawTypingData(dwell, flight)
 
+            print('cssssssssvvvvvvvvvv')
             csv_obj = processData.packTypingDataIntoArray(new_user, user_session, reps, accuracy, wpm, calculation_array)
             processData.saveCSV(new_user, csv_obj)
         
@@ -156,6 +162,7 @@ def register_habit():
         except Exception as e:
             # to add delete csv
             os.rmdir('typing-habits\\' + new_user)
+            print('try_register')
             print(e)
             abort(500)
         finally:
@@ -196,7 +203,7 @@ def login():
         
         # Validation
         if not user or not user.strip():
-            print('user', session.get('user', None))
+            # print('user', session.get('user', None))
             error = 'No input detected'
         else:
             # connect to MySQL db and check if user is found in DB
@@ -252,6 +259,8 @@ def login_verify():
             session_num = int(processData.getLastSessionNumber(user)) + 1 # get new session number
             csv_obj = processData.packTypingDataIntoArray(user, session_num, 1, accuracy, wpm, calculation_array)
             
+            processData.decryptCSV(user)
+
             # Use Model to verify habits
             user_df = ocsvm.convertNPArrayToDF(csv_obj)
             prediction = ocsvm.predict(user_df)
@@ -261,7 +270,6 @@ def login_verify():
                 # STEP 1: encryption of data and writing into csv
                 login_try = 0 # reset global variable login_try to 0
                 csv_obj = processData.packTypingDataIntoArray(user, session_num, 1, accuracy, wpm, calculation_array)
-                processData.decryptCSV(user)
                 processData.saveCSV(user, csv_obj) # save the record into csv
                 processData.encryptCSV(user)
                 # Step 2: return all the success/page all these
@@ -274,6 +282,8 @@ def login_verify():
                 else:
                     error_msg = str(3-login_try) + " out of 3 attempt(s) left."
                     # Step 1: Return error msg and try again
+            
+            processData.encryptCSV(user)
         return render_template('login-verify-habit.html', error=error_msg, user=session['user'], sentence=sentence[0]) 
                 
     else:
@@ -286,26 +296,34 @@ def login_verify():
 
 @app.route('/login/security-attempt', methods=['POST', 'GET'])
 def security_login():
+    global security_try
     user = session.get('user', None)
     security_qn = getSecurityQn(user)
     if request.method == "POST":
+        security_try +=1
         ans = request.form.get("security-ans", None)
         if ans == None or ans == '':
             return render_template('security-login.html', security_qn=security_qn[0], error='Please enter something')
         else:
             check = checkSecurityAns(user, ans)
-            print(check)
+            # print(check)
             if check == True:
                 session['verified_login'] = True
-                print('ans', ans)
-                print(check)
+                security_try = 0
                 return redirect(url_for('index'))
             else:
-                return render_template('security-login.html', security_qn=security_qn[0], error='Security answer is incorrect')
+                attempts_left = 3-security_try
+                error_msg = 'Security answer is incorrect. ' + str(attempts_left) + ' attempts left.'
+                if security_try == 3:
+                    session.clear()
+                    return render_template('login.html', error='Too many attempts. Redirected to login page.') 
+                else:
+                    return render_template('security-login.html', security_qn=security_qn[0], error=error_msg)
     else:
         if session.get('user', None) != None:
             return render_template('security-login.html', security_qn=security_qn[0])
         else:
+            security_try = 0
             abort(401)
 
 @app.route('/recalibrate', methods = ['POST', 'GET'])
@@ -327,9 +345,9 @@ def recalibrate():
             user = session.get("user", None)
             # STEP 2: remove of original habit file, processing, encryption of data and writing into csv
             # remove
-            folder_path = os.path.dirname(os.path.realpath('typing-habits\\' + user))
-            remove_filename = folder_path + '\\' + user + '\\' + user + ".csv"
-            os.remove(remove_filename)
+            # folder_path = os.path.dirname(os.path.realpath('typing-habits\\' + user))
+            # remove_filename = folder_path + '\\' + user + '\\' + user + ".csv"
+            # os.remove(remove_filename)
 
             # Processing 
             for x in raw_data:
@@ -350,7 +368,7 @@ def recalibrate():
                 user_data = ocsvm.getData(user)
                 ocsvm.create_model(user_data)
             except Exception as e:
-                print(e)
+                # print(e)
                 abort(500)
 
             # Encrypt csv
@@ -444,7 +462,7 @@ def update_sentence(sentence, user):
         mysql.connection.commit()
         success = True
     except Exception as e:
-        print(e)
+        # print(e)
         success = False
     finally:
         cursor.close()
@@ -467,7 +485,7 @@ def register_user(user, first_name, last_name, dob, email, sentence, security_qn
         mysql.connection.commit()
         success = True
     except Exception as e:
-        print(e)
+        # print(e)
         success = False
     finally:
         cursor.close()  

@@ -158,7 +158,6 @@ function keyUp(sentence, userEntry) {
         enteredText.splice(-1);
         recordDwellTime.splice(-1);
 
-
         // currentSentence = document.getElementById(userEntry).value.length;
         // var numberOfTimes = originalSentence - currentSentence;
         // console.log(numberOfTimes);

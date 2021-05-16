@@ -1,6 +1,7 @@
 # General imports
 import os
 import csv
+import logging
 
 # For model-related processing
 import numpy as np
@@ -12,7 +13,14 @@ from Crypto.Cipher import AES as aes
 from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
+import shutil
 
+
+#google cloud
+from gcloud import storage
+
+# Configure this environment variable 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "typinghabits-313215-4a15ed67186f.json"
 
 def processRawTypingData(dwell_time, flight_time):
     calculation_array = []
@@ -105,7 +113,25 @@ def encryptCSV(username):
     with open(filename, 'wb+') as f:
         f.write(appendedStr)
 
+    client = storage.Client()
+    #bucket name
+    bucket = client.get_bucket('typing-habit')
+
+    #destination of storage
+    blob = bucket.blob(username + '/' + username + ".csv")
+
+    #Upload data based on the name of the file
+    blob.upload_from_filename(filename)
+
+    blob = bucket.blob(username + '/' + username + "_model.sav")
+
+    blob.upload_from_filename(folder_path + '\\' + username + '\\' + username + "_model.sav")
+
+    #remove local file
+    shutil.rmtree('typing-habits\\' + username)
+
 def decryptCSV(username):
+
     folder = 'typing-habits' + '\\' + username
     
     # Checks
@@ -115,6 +141,17 @@ def decryptCSV(username):
     # get your current directory .../typing-habits/user
     folder_path = os.path.dirname(os.path.realpath(folder))
     filename = folder_path + '\\' + username + '\\' + username + ".csv"
+
+    #Download from cloud
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket('typing-habit')
+
+    blob = bucket.blob(username + '/' + username + ".csv")
+    blob.download_to_filename(filename)
+
+    blob = bucket.blob(username + '/' + username + "_model.sav")
+    blob.download_to_filename(folder_path + '\\' + username + '\\' + username + "_model.sav")
 
     with open(filename, 'rb') as f:
         iv = f.read(16)
