@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+
+<!-------------------------- block head -------------------------------->
+
+{% block head %}
+<title>Register for an account</title>
+<style>
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+</style>
+
+{% endblock %}
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+{% block navlinks %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+</li>
+{% endblock %}
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 form-box" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">
+                <h2 style="margin-bottom: 2%;">Register an account</h2>
+                <h4 style="margin-bottom: 2%;">Step 2 of 2: Register your typing habit</h4>
+                <br />
+                <div id="login_pt_one">
+                    <form id="reg-form-verify" method="post" onsubmit="submitRecalAndRegArray('register-verify-jdata', 'reg-form-verify', event)">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <div class="form-group">
+                            <label class="noSelect" id="sentence">{{ sentence }}</label>
+                            <textarea onkeypress=keyPress(event) onkeydown="keyDown('reg-user-entry', event)" id="reg-user-entry"
+                                    onkeyup="keyUp('sentence', 'reg-user-entry', event)" name="reg-typing-habit"
+                                    placeholder="Please type according to the sentence above. (Sensitive to caps and punctuation)"
+                                    rows="6" cols="60" oncut="return false;" onpaste="return false;"
+                                    oncopy="return false;" oncontextmenu="return false;" autocomplete="off"></textarea>
+                        </div>
+
+                        <div style="font-size:12px;color:green" id="reg-instruction">1/10 attempt(s)</div>
+
+                        <textarea type="jsondata" name="RHabit-json" style="display:none" id="register-verify-jdata"></textarea>
+                        {% if error %}
+                        <div style="padding:2%" class="alert alert-danger alert-dismissible">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <strong>{{ error }}</strong>
+                        </div>
+                        {% endif %}
+<!-- ------------------------------------------------------------------------------------->
+                        <button id="reg-attempt-btn" onclick="recalibrateAndRegister('reg-user-entry', 'reg-instruction', 'reg-attempt-btn', 'submit-btn', event)"
+                                class="btn btn-info">Next</button>
+                        <div class="center">
+                            <input type="submit" id="submit-btn" style="display:none" value="Register Account" class="btn btn-info" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="{{ url_for('static', filename='js/typing-habits.js') }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var csrf_token = "{{ csrf_token() }}";
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        }
+    });
+</script>
+<!------------------------- Banner section ------------------------->
+{% endblock %}

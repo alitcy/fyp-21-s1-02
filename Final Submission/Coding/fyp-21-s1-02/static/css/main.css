@@ -1,0 +1,122 @@
+/************************** base.html css formatting **************************/
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family:sans-serif;
+}
+
+/* nav links */
+#nav-bar{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#logo{
+    width:50px;
+    height:50px;
+    margin-left:20px;
+    background:#95b8e3
+}
+.navbar-nav li a{
+    font-weight: 600;
+}
+
+.fa .fa-bars{
+    color: black;
+    font-size:30px !important;
+}
+
+.navbar-toggler{
+    outline: none !important;
+}
+
+.navbar{
+    background-color: #a7a7a7;
+    padding: 0px
+}
+
+.nav-item{
+    margin-right: 10px;
+}
+
+/************************** General CSS **************************/
+/* sections */
+#banner{
+    background-color: #90BDB5;
+    padding-top: 5%;
+    height: 100vh;
+    opacity:0.8
+}
+
+/* form */
+.form-box{
+    outline: 1px solid black;
+    text-align:center;
+    display: inline-block;
+    width:auto;
+    max-width:50%;
+    background-color: #c0c0c0;
+}
+
+.form-table {
+    display: inline-block;
+    width:auto
+}
+
+input{
+    max-width:225px;
+    width:auto;
+}
+
+input.active {
+    color:gray
+}
+
+textarea {
+    padding: 5px;
+    font-size: 16px;
+}
+
+/* table */
+table {
+    border-collapse: collapse;
+ }
+
+ th, td {
+    padding: 15px;
+}
+
+/**************************** index.html **************************/
+
+#index-banner{
+    background-color: #fafafa;
+    padding-top: 5%;
+    height: 90vh;
+    opacity:0.8
+}
+
+.welcome-menu{
+    font-size: 40px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.list-no-bullet{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+/************************** prevent selecting sentence text in all habit validation **************************/
+.noSelect label {
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+}
+
+

@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+
+<!-------------------------- block head -------------------------------->
+
+{% block head %}
+<title>Register for an account</title>
+<style>
+form {
+    display: table;
+    text-align: center;
+    width: 100%;
+}
+p {
+    display: table-row;
+    width: 100%;
+}
+label {
+
+    width: 30%
+}
+input {
+    width:70%;
+}
+</style>
+{% endblock %}
+
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+{% block navlinks %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+</li>
+{% endblock %}
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 form-box" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">
+                <h2 style="margin-bottom: 2%;">Register an account</h2>
+                <h4 style="margin-bottom: 2%;">Step 1 of 2: Enter your details</h4>
+                <div class="form-container">
+                    <form id="reg-form-one" method="post" action="{{ url_for('register') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <p>
+                            <label>Username</label>
+                            <input type="text" name="username"
+                                size="20" required placeholder="Username"
+                                title="Username should be at least 4 characters" pattern=".{4,}"/>
+                        </p>
+
+                        <p>
+                            <label>First name</label>
+                            <input type="text" name="first_name"
+                                size="20" required
+                                title="Please enter a legitimate first name" placeholder="First name"
+                                pattern=".{2,}"/>
+                        </p>
+
+                        <p>
+                            <label>Last name</label>
+                            <input type="text" name="last_name"
+                                size="20" required
+                                title="Please enter a legitimate last name" placeholder="Last name"
+                                pattern=".{2,}"/>
+                        </p>
+                        <p>
+                            <label>Date of Birth</label>
+                        <input type="date" name="dob" required
+                                title="dd/mm/yyyy format only" pattern="^(0[1-9]|[12][0-9]|3[01])[- /.]" />
+                        </p>
+                        <p>
+                            <label>Email</label>
+                            <input type="email" name="email"
+                                    size="20" required pattern="[^@]+@[^@]+\.[^@]+"
+                                    title="Please enter a valid email" placeholder="example@email.com"/>
+                        </p>
+                        <p>
+                            <label>Security Question</label>
+                            <input name="sec-qn"
+                                    size="20" required
+                                    placeholder="Security question"
+                                    title="Question needs a min of 3 characters"
+                                    pattern=".{3,}"/>
+                        </p>
+                        <p>
+                            <label>Security Answer</label>
+                            <input name="sec-ans"
+                                    size="20" required
+                                    title="Minimum length of 3 characters needed."
+                                    placeholder="Security answer"
+                                    pattern=".{3,}"/>
+                        </p>
+                        <br />
+                        {% if user_error %}
+                        <p>
+                            <div style="padding:2%;display: table-cell;" colspan="2" class="alert alert-danger alert-dismissible">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>{{ user_error }}</strong>
+                            </div>
+                        </p>
+                        {% endif %}
+
+                        {% if email_error %}
+                        <p>
+                            <div style="padding:2%;display: table-cell;" colspan="2" class="alert alert-danger alert-dismissible">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>{{ email_error }}</strong>
+                            </div>
+                        </p>
+                        {% endif %}
+                        <br />
+                        <p>
+                            <input type="submit" colspan="2" value="Next" class="btn btn-info next-button" />
+                        </p>
+                    </form>
+                </div>
+            </div>
+            <p style="text-align:center;">
+                Click <a style="font-style:oblique" href="{{ url_for('login') }}"><u>here</u></a> to log in instead if you have an account!
+            </p>
+        </div>
+    </div>
+</section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    var csrf_token = "{{ csrf_token() }}";
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrf_token);
+            }
+        }
+    });
+</script>
+<!------------------------- Banner section ------------------------->
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+<!-------------------------- block head -------------------------------->
+{% block head %}
+<title>Oh snap!!!</title>
+<style>
+#back {
+  text-decoration: underline;
+  text-decoration-color: blue;
+  color: blue;
+  cursor: pointer;
+}
+</style>
+{% endblock %}
+
+<!-------------------------- block head -------------------------------->
+
+<!-------------------------- block navlink ------------------------------>
+{% block navlinks %}
+<!--<li class="nav-item">-->
+<!--    <a class="nav-link" href="{{ url_for('login') }}">Login</a>-->
+<!--  </li>-->
+<!--<li class="nav-item">-->
+<!--  <a class="nav-link" href="{{ url_for('register') }}">Register</a>-->
+<!--</li>-->
+{% endblock %}
+<!---------------------------- block navlink --------------------------->
+
+{% block body %}
+<!------------------------- Banner section ------------------------->
+<section id="banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6" style="padding:3%;text-align:center;margin-left:auto;margin-right:auto">
+                <h1>Error {{ e_type }} !!!</h1>
+                <h3>{{ error }}</h3>
+                <h4>
+                    Click <a id="back" onclick="goBack()">here</a> to return.
+                </h4>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>
+<!------------------------- Banner section ------------------------->
+{% endblock %}
